@@ -94,29 +94,31 @@ MONITOR_ID = '***'
 MONITOR_ITEM = 'silverfern'
 
 def check_opening():
+with Browser('phantomjs') as browser:
+		
+	print '===================== Check start at %s ======================' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+	
 	try:
-		with Browser('phantomjs') as browser:
-			print '===================== Check start at %s ======================' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
-
-			url = 'https://www.immigration.govt.nz/secure/Login+Silver+Fern.htm'
-			
-			browser.visit(url)
-			browser.fill('OnlineServicesLoginStealth:VisaLoginControl:userNameTextBox', LOGIN_USER)
-			browser.fill('OnlineServicesLoginStealth:VisaLoginControl:passwordTextBox', LOGIN_PASS)
-			browser.find_by_name('OnlineServicesLoginStealth:VisaLoginControl:loginImageButton').first.click()
-			browser.visit('https://www.immigration.govt.nz/SilverFern/')
-			
-			#print browser.html
-		   
-			if browser.is_text_present('Unfortunately at this time we are not accepting new applications', wait_time=2):
-				print 'Oops, you have no luck!'
-				post(MONITOR_ID, MONITOR_ITEM, 1, 'name=silverfern')
-			else:
-				print 'Congratulations, you got it!'
-				post(MONITOR_ID, MONITOR_ITEM, 0, 'name=silverfern')
-				print browser.html
+		url = 'https://www.immigration.govt.nz/secure/Login+Silver+Fern.htm'
+		
+		browser.visit(url)
+		browser.fill('OnlineServicesLoginStealth:VisaLoginControl:userNameTextBox', LOGIN_USER)
+		browser.fill('OnlineServicesLoginStealth:VisaLoginControl:passwordTextBox', LOGIN_PASS)
+		browser.find_by_name('OnlineServicesLoginStealth:VisaLoginControl:loginImageButton').first.click()
+		browser.visit('https://www.immigration.govt.nz/SilverFern/')
+		
+		#print browser.html
+	   
+		if browser.is_text_present('Unfortunately at this time we are not accepting new applications', wait_time=2):
+			print 'Oops, you have no luck!'
+			post(MONITOR_ID, MONITOR_ITEM, 1, 'name=silverfern')
+		else:
+			print 'Congratulations, you got it!'
+			post(MONITOR_ID, MONITOR_ITEM, 0, 'name=silverfern')
+			print browser.html
 	except:
-		print 'something wrong, I just ignore!!'
+		print 'something wrong, I choose to ignore!!'
+		print trace_back()
 	
 			
 
