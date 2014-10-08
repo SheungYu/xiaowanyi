@@ -26,4 +26,3 @@ scheduler.add_cron_job(check_opening, minute='*/5')
 scheduler.start()
 
 
-
