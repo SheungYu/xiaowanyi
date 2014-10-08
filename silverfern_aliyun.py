@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -u
 
 # ########################################
 # Function:    CMS self-defined monitor SDK
@@ -81,53 +81,60 @@ def post(ali_uid, metric_name, metric_value, fields):
 ###########################################################################################
 
 from splinter import Browser
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.triggers.interval import IntervalTrigger
+import schedule
 import time
 
-LOGIN_USER = '***'
-LOGIN_PASS = '***'
+LOGIN_USER = 'chantz'
+LOGIN_PASS = '723neoidea'
 
 INTERVAL = 15 # minutes
 
-MONITOR_ID = '***'
+MONITOR_ID = '1940355560597763'
 MONITOR_ITEM = 'silverfern'
 
-def check_opening():
-with Browser('phantomjs') as browser:
-		
-	print '===================== Check start at %s ======================' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+LOGIN_URL = 'https://www.immigration.govt.nz/secure/Login+Silver+Fern.htm'
+SILVERFERN_URL = 'https://www.immigration.govt.nz/SilverFern/'
+
+def check_it():
 	
-	try:
-		url = 'https://www.immigration.govt.nz/secure/Login+Silver+Fern.htm'
+	with Browser('phantomjs') as browser:
 		
-		browser.visit(url)
-		browser.fill('OnlineServicesLoginStealth:VisaLoginControl:userNameTextBox', LOGIN_USER)
-		browser.fill('OnlineServicesLoginStealth:VisaLoginControl:passwordTextBox', LOGIN_PASS)
-		browser.find_by_name('OnlineServicesLoginStealth:VisaLoginControl:loginImageButton').first.click()
-		browser.visit('https://www.immigration.govt.nz/SilverFern/')
+		print '===================== Check start at %s ======================' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 		
-		#print browser.html
-	   
-		if browser.is_text_present('Unfortunately at this time we are not accepting new applications', wait_time=2):
-			print 'Oops, you have no luck!'
-			post(MONITOR_ID, MONITOR_ITEM, 1, 'name=silverfern')
-		else:
-			print 'Congratulations, you got it!'
-			post(MONITOR_ID, MONITOR_ITEM, 0, 'name=silverfern')
-			print browser.html
-	except:
-		print 'something wrong, I choose to ignore!!'
-		print trace_back()
+		try:		
+			browser.visit(LOGIN_URL)
+			browser.fill('OnlineServicesLoginStealth:VisaLoginControl:userNameTextBox', LOGIN_USER)
+			browser.fill('OnlineServicesLoginStealth:VisaLoginControl:passwordTextBox', LOGIN_PASS)
+			browser.find_by_name('OnlineServicesLoginStealth:VisaLoginControl:loginImageButton').first.click()
+			browser.visit(SILVERFERN_URL)
+			
+			#print browser.html
+		   
+			if browser.title == 'Runtime Error':
+				print 'Runtime Error, I choose to ignore!!'
+			elif browser.is_text_present('Unfortunately at this time we are not accepting new applications', wait_time=2):
+				print 'Oops, you have no luck!'
+				post(MONITOR_ID, MONITOR_ITEM, 1, 'name=silverfern')
+			else:
+				print 'Congratulations, you got it!'
+				post(MONITOR_ID, MONITOR_ITEM, 0, 'name=silverfern')
+				print browser.html
+		except HttpResponseError, e:
+			print "Oops, I failed with the status code %s and reason %s" % (e.status_code, e.reason)
+		except:
+			print 'Oops, something wrong, I choose to ignore!!'
+
+			import traceback
+			print traceback.format_exc() 
 	
 			
-
 
 if __name__ == '__main__':
 
 	print '+++++++++++++++++++++ Scheduler start at %s +++++++++++++++++++++++++++' % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
 
-	scheduler = BlockingScheduler()
-	interval = IntervalTrigger(minutes=INTERVAL)
-	scheduler.add_job(check_opening, interval)
-	scheduler.start()
+	schedule.every(INTERVAL).minutes.do(check_it)
+	while True:
+		schedule.run_pending()
+		time.sleep(1)
+
