@@ -84,8 +84,8 @@ from splinter import Browser
 import schedule
 import time
 
-LOGIN_USER = 'chantz'
-LOGIN_PASS = '723neoidea'
+LOGIN_USER = ''
+LOGIN_PASS = ''
 
 INTERVAL = 15 # minutes
 
