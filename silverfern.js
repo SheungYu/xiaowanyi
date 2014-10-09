@@ -9,8 +9,8 @@ var casper = require('casper').create({
 
 var LOGIN_URL = 'https://www.immigration.govt.nz/secure/Login+Silver+Fern.htm'
 var SILVERFERN_URL = 'https://www.immigration.govt.nz/SilverFern/'
-var LOGIN_USER = 'chantz'
-var LOGIN_PASS = '723neoidea'
+var LOGIN_USER = ''
+var LOGIN_PASS = ''
 
 casper.start(LOGIN_URL);
 
